@@ -6,11 +6,20 @@ using System.Threading.Tasks;
 
 namespace Graphs
 {
+    /// <summary>
+    /// Базовый тип для ребра
+    /// </summary>
+    /// <typeparam name="T">Этот же клсс, для которого будет конкретизация</typeparam>
     public class BaseEdge<T>
     {
+        /// <summary>
+        /// Исходящая вершина
+        /// </summary>
         public BaseVertex<T> Previous { get; set; }
+        /// <summary>
+        /// Конечная вершина
+        /// </summary>
         public BaseVertex<T> NextVertex { get; set; }
-        public bool IsSeen { get; set; } = false;
 
         public BaseEdge(BaseVertex<T> previousVertex, BaseVertex<T> nextVertex)
         {

@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace Graphs
 {
+    /// <summary>
+    /// Базовый класс для графа
+    /// </summary>
+    /// <typeparam name="T">Тип вершины</typeparam>
+    /// <typeparam name="E">Тип ребра</typeparam>
     public abstract class BaseGraph<T, E>
         where T : BaseVertex<E>
         where E : BaseEdge<E>
@@ -17,7 +22,7 @@ namespace Graphs
         /// <summary>
         /// Словарь вершин графа по их именам
         /// </summary>
-        public Dictionary<string, T> NameVertex => Vertex.ToDictionary(wde=> wde.Name);
+        public Dictionary<string, T> NameVertex => Vertex.ToDictionary(wde => wde.Name);
         /// <summary>
         /// Вершины графа
         /// </summary>
@@ -169,9 +174,174 @@ namespace Graphs
         #endregion
 
         #region Searched
-
-
-
+        /// <summary>
+        /// Поиск в ширину
+        /// </summary>
+        /// <returns>Есть ли путь от начальной к кконечной вершине</returns>
+        public bool DFS(string startVertex, string endVertex)
+        {
+            if (this.GetPathDFS(startVertex, endVertex) != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// Поиск в глубину
+        /// </summary>
+        /// <returns>Путь от начальной к конечной</returns>
+        public List<T> GetPathDFS(string startVertexName, string endVertexName)
+        {
+            NullebleNow();
+            if (!NameVertex.ContainsKey(startVertexName))
+            {
+                throw new Exception("Вершины " + startVertexName + "в графе нет");
+            }
+            if (!NameVertex.ContainsKey(endVertexName))
+            {
+                throw new Exception("Вершины " + endVertexName + "в графе нет");
+            }
+            T startVertex = this.NameVertex[startVertexName];
+            T endVertex = this.NameVertex[endVertexName];
+            Stack<T> stack = new Stack<T>();
+            stack.Push(startVertex);
+            bool end = false;
+            while (stack.Count != 0)
+            {
+                T bufferVertex = stack.Pop();
+                if (bufferVertex.IsSeen == false)
+                {
+                    bufferVertex.IsSeen = true;
+                    if (bufferVertex != endVertex)
+                    {
+                        foreach (T buf in bufferVertex.NextVertex.Select(w => w.NextVertex))
+                        {
+                            if ((!buf.IsSeen) && !stack.Contains(buf))
+                            {
+                                stack.Push(buf);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        end = true;
+                        break;
+                    }
+                }
+            }
+            if (end)
+            {
+                Stack<T> answer = new Stack<T>();
+                T buffer = endVertex;
+                answer.Push(endVertex);
+                while (buffer != startVertex)
+                {
+                    var r = Vertex.Where(w => w.NextVertex.Where(ww => (ww.NextVertex == buffer) && (ww.Previous.IsSeen)).Count() == 1).ToArray();
+                    answer.Push(r[0]);
+                    buffer.IsSeen = false;
+                    buffer = r[0];
+                }
+                NullebleNow();
+                return answer.ToList();
+            }
+            else
+            {
+                NullebleNow();
+                return null;
+            }
+        }
+        /// <summary>
+        /// Поиск в ширину
+        /// </summary>
+        /// <returns>Есть ли путь от начальной к кконечной вершине</returns>
+        public bool BFS(string startVertex, string endVertex)
+        {
+            if (this.GetPathBFS(startVertex, endVertex) != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// Поиск в ширину
+        /// </summary>
+        /// <returns>Путь от начальной к конечной</returns>
+        public List<T> GetPathBFS(string startVertexName, string endVertexName)
+        {
+            NullebleNow();
+            if (!NameVertex.ContainsKey(startVertexName))
+            {
+                throw new Exception("Вершины " + startVertexName + "в графе нет");
+            }
+            if (!NameVertex.ContainsKey(endVertexName))
+            {
+                throw new Exception("Вершины " + endVertexName + "в графе нет");
+            }
+            T startVertex = this.NameVertex[startVertexName];
+            T endVertex = this.NameVertex[endVertexName];
+            Queue<T> queue = new Queue<T>();
+            queue.Enqueue(startVertex);
+            bool end = false;
+            while (queue.Count != 0)
+            {
+                T bufferVertex = queue.Dequeue();
+                if (bufferVertex.IsSeen == false)
+                {
+                    bufferVertex.IsSeen = true;
+                    if (bufferVertex != endVertex)
+                    {
+                        foreach (T buf in bufferVertex.NextVertex.Select(w => w.NextVertex))
+                        {
+                            if ((!buf.IsSeen) && !queue.Contains(buf))
+                            {
+                                queue.Enqueue(buf);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        end = true;
+                        break;
+                    }
+                }
+            }
+            if (end)
+            {
+                Stack<T> answer = new Stack<T>();
+                T buffer = endVertex;
+                answer.Push(endVertex);
+                while (buffer != startVertex)
+                {
+                    var r = Vertex.Where(w => w.NextVertex.Where(ww => (ww.NextVertex == buffer) && (ww.Previous.IsSeen)).Count() == 1).ToArray();
+                    answer.Push(r[0]);
+                    buffer.IsSeen = false;
+                    buffer = r[0];
+                }
+                NullebleNow();
+                return answer.ToList();
+            }
+            else
+            {
+                NullebleNow();
+                return null;
+            }
+        }
+        /// <summary>
+        /// Обнуляет все вершины
+        /// </summary>
+        protected void NullebleNow()
+        {
+            foreach (T edge in Vertex)
+            {
+                edge.IsSeen = false;
+            }
+        }
         #endregion
     }
 }

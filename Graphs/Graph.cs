@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Graphs
 {
+    /// <summary>
+    /// Класс обычного графа(не взвешенный, не ориентированный)
+    /// </summary>
     public class Graph : BaseGraph<Vertex, Edge>
     {
         #region Vertex
@@ -17,9 +20,8 @@ namespace Graphs
             this.AddVertex(new Vertex(name));
         }
         /// <summary>
-        /// Добавление новой вершины в граф по имени, а также ребра исходящие из нее по имени
+        /// Добавление новой вершин в граф по имени
         /// </summary>
-        /// <param name="nextVertex">следующий вершины(должны быть уникальными)</param>
         public void AddVertex(params string[] names)
         {
             foreach (string vertexName in names)
@@ -52,8 +54,8 @@ namespace Graphs
             }
             foreach (Vertex ver in nextVertex)
             {
-                vertex.NextVertex.Add(new Edge(ver, vertex));
-                ver.NextVertex.Add(new Edge(vertex, ver));
+                vertex.NextVertex.Add(new Edge(vertex, ver));
+                ver.NextVertex.Add(new Edge(ver, vertex));
             }
         }
         #endregion
@@ -64,26 +66,26 @@ namespace Graphs
         /// </summary>
         public void AddEdge(string previousVertex, string nextVertex)
         {
-            var previous = this.NameVertex[previousVertex];
-            var next = this.NameVertex[nextVertex];
-            if ((previous == null) && (next == null))
+            if ((!NameVertex.ContainsKey(previousVertex) && (!NameVertex.ContainsKey(nextVertex))))
             {
                 throw new Exception("Данных вершин в графе нет: " + previousVertex + " " + nextVertex);
             }
             else
             {
-                if (previous == null)
+                if (!NameVertex.ContainsKey(previousVertex))
                 {
                     throw new Exception("Вершины нет в графе: " + previousVertex);
                 }
                 else
                 {
-                    if (next == null)
+                    if (!NameVertex.ContainsKey(nextVertex))
                     {
                         throw new Exception("Вершины нет в графе: " + nextVertex);
                     }
                 }
             }
+            var previous = this.NameVertex[previousVertex];
+            var next = this.NameVertex[nextVertex];
             this.AddEdge(new Edge(previous, next));
         }
         /// <summary>
@@ -91,8 +93,9 @@ namespace Graphs
         /// </summary>
         public new void AddEdge(Edge e)
         {
+            var ee = new Edge((Vertex)e.NextVertex, (Vertex)e.Previous);
             base.AddEdge(e);
-            base.AddEdge(new Edge((Vertex)e.NextVertex, (Vertex)e.Previous));
+            base.AddEdge(ee);
         }
         /// <summary>
         /// Добавляет ребро графа между двумя существующими вершинами
