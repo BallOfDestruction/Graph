@@ -33,6 +33,13 @@ namespace Graphs
 
         #region Edge
         /// <summary>
+        /// Добавление ребра из вершины в нее саму
+        /// </summary>
+        public void AddEdgeHimself(string name, double weight)
+        {
+            this.NameVertex[name].NextVertex.Add(new WeightEdge(NameVertex[name], NameVertex[name], weight));
+        }
+        /// <summary>
         /// Добавляет ребро между двумя существующими вершинами
         /// </summary>
         public void AddEdge(string previousVertex, string nextVertex, double weight)

@@ -20,6 +20,7 @@ namespace TestGraphConsole
             gr.AddEdge("5","3");
             gr.AddEdge("5", "6");
             gr.AddEdge("6", "3");
+            gr.AddVertexHimself("1");
             var c = gr.GetPathBFS("1", "6");
         }
     }

@@ -62,6 +62,13 @@ namespace Graphs
 
         #region Edge
         /// <summary>
+        /// Добавление ребра из вершины в нее саму
+        /// </summary>
+        public void AddEdgeHimself(string name)
+        {
+            this.NameVertex[name].NextVertex.Add(new Edge(NameVertex[name], NameVertex[name]));
+        }
+        /// <summary>
         /// Добавляет ребро между двумя существующими вершинами
         /// </summary>
         public void AddEdge(string previousVertex, string nextVertex)

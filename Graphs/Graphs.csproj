@@ -46,6 +46,7 @@
     <Compile Include="Graph.cs" />
     <Compile Include="GraphIO.cs" />
     <Compile Include="GraphTransformation.cs" />
+    <Compile Include="InfoGraph.cs" />
     <Compile Include="OrgGraph.cs" />
     <Compile Include="WeightEdge.cs" />
     <Compile Include="WeightGraph.cs" />
