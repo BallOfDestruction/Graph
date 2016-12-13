@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Graphs
 {
-    public class Edge : BaseEdge<Edge>
+    public class OrgGraph : BaseGraph<Vertex, Edge>
     {
-        public Edge(Vertex previousVertex , Vertex nextVertex) : base(previousVertex, nextVertex) {}
     }
 }

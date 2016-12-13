@@ -1,0 +1,8 @@
+C:\Users\adminS\Documents\Graph\TestGraphConsole\bin\Debug\TestGraphConsole.exe.config
+C:\Users\adminS\Documents\Graph\TestGraphConsole\bin\Debug\TestGraphConsole.exe
+C:\Users\adminS\Documents\Graph\TestGraphConsole\bin\Debug\TestGraphConsole.pdb
+C:\Users\adminS\Documents\Graph\TestGraphConsole\bin\Debug\Graphs.dll
+C:\Users\adminS\Documents\Graph\TestGraphConsole\bin\Debug\Graphs.pdb
+C:\Users\adminS\Documents\Graph\TestGraphConsole\obj\Debug\TestGraphConsole.exe
+C:\Users\adminS\Documents\Graph\TestGraphConsole\obj\Debug\TestGraphConsole.pdb
+C:\Users\adminS\Documents\Graph\TestGraphConsole\obj\Debug\TestGraphConsole.csprojResolveAssemblyReference.cache

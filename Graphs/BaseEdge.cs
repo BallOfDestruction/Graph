@@ -8,12 +8,19 @@ namespace Graphs
 {
     public class BaseEdge<T>
     {
+        public BaseVertex<T> Previous { get; set; }
         public BaseVertex<T> NextVertex { get; set; }
         public bool IsSeen { get; set; } = false;
 
-        public BaseEdge(BaseVertex<T> NextVertex)
+        public BaseEdge(BaseVertex<T> previousVertex, BaseVertex<T> nextVertex)
         {
-            this.NextVertex = NextVertex;
+            this.NextVertex = nextVertex;
+            this.Previous = previousVertex;
+        }
+
+        public override string ToString()
+        {
+            return Previous.Name + " -> " + NextVertex.Name;
         }
     }
 }

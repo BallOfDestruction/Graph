@@ -8,11 +8,125 @@ namespace Graphs
 {
     public class Graph : BaseGraph<Vertex, Edge>
     {
-
-
-        protected override void AddVertex(Vertex vertex)
+        #region Vertex
+        /// <summary>
+        /// Добавление новой вершины в граф по имени
+        /// </summary>
+        public void AddVertex(string name)
         {
-            this.Vertex.Add(vertex);
+            this.AddVertex(new Vertex(name));
         }
+        /// <summary>
+        /// Добавление новой вершины в граф по имени, а также ребра исходящие из нее по имени
+        /// </summary>
+        /// <param name="nextVertex">следующий вершины(должны быть уникальными)</param>
+        public void AddVertex(params string[] names)
+        {
+            foreach (string vertexName in names)
+            {
+                this.AddVertex(vertexName);
+            }
+        }
+        /// <summary>
+        /// Добавление новой вершины в граф по имени, а также исходящие ребра из нее
+        /// </summary>
+        /// <param name="nextVertex">Следующие вершины</param>
+        public void AddVertex(string name, params Vertex[] nextVertex)
+        {
+            if (this.NameVertex.ContainsKey(name))
+            {
+                throw new Exception("Данная вершина уже присутствует");
+            }
+            if (nextVertex.Where(w => nextVertex.Where(s => s == w).Count() > 1).Count() > 0)
+            {
+                throw new Exception("Вершины в списке повторяются, из одной вершины не может существовать два ребра в другую вершину");
+            }
+            this.AddVertex(name);
+            Vertex vertex = this.NameVertex[name];
+            foreach (Vertex ver in nextVertex)
+            {
+                if (ver.NextVertex.Select(w => w.NextVertex).Contains(vertex))
+                {
+                    throw new Exception("Ребро уже существует: " + ver.Name + " - " + vertex.Name);
+                }
+            }
+            foreach (Vertex ver in nextVertex)
+            {
+                vertex.NextVertex.Add(new Edge(ver, vertex));
+                ver.NextVertex.Add(new Edge(vertex, ver));
+            }
+        }
+        #endregion
+
+        #region Edge
+        /// <summary>
+        /// Добавляет ребро между двумя существующими вершинами
+        /// </summary>
+        public void AddEdge(string previousVertex, string nextVertex)
+        {
+            var previous = this.NameVertex[previousVertex];
+            var next = this.NameVertex[nextVertex];
+            if ((previous == null) && (next == null))
+            {
+                throw new Exception("Данных вершин в графе нет: " + previousVertex + " " + nextVertex);
+            }
+            else
+            {
+                if (previous == null)
+                {
+                    throw new Exception("Вершины нет в графе: " + previousVertex);
+                }
+                else
+                {
+                    if (next == null)
+                    {
+                        throw new Exception("Вершины нет в графе: " + nextVertex);
+                    }
+                }
+            }
+            this.AddEdge(new Edge(previous, next));
+        }
+        /// <summary>
+        /// Добавляет ребро графа между двумя существующими вершинами
+        /// </summary>
+        public new void AddEdge(Edge e)
+        {
+            base.AddEdge(e);
+            base.AddEdge(new Edge((Vertex)e.NextVertex, (Vertex)e.Previous));
+        }
+        /// <summary>
+        /// Добавляет ребро графа между двумя существующими вершинами
+        /// </summary>
+        public void AddEdge(params Edge[] edge)
+        {
+            foreach (Edge ed in edge)
+            {
+                AddEdge(ed);
+            }
+        }
+        /// <summary>
+        /// Добавляет ребро графа между двумя существующими вершинами
+        /// </summary>
+        public void AddEdge(IEnumerable<Edge> edges)
+        {
+            this.AddEdge(edges.ToArray());
+        }
+        /// <summary>
+        /// Удалеяет ребро между двумя вершинами(обоюдно)
+        /// </summary>
+        public new void RemoveEdge(Edge edge)
+        {
+            this.RemoveEdge(edge);
+            this.RemoveEdge(Edges.Where(w => (w.Previous == edge.NextVertex) && (w.NextVertex == edge.Previous)).ToArray()[0]);
+        }
+        /// <summary>
+        /// Удалеяет ребро между двумя вершинами(обоюдно)
+        /// </summary>
+        public new void RemoveEdge(string previous, string next)
+        {
+            this.RemoveEdge(previous, next);
+            this.RemoveEdge(next, previous);
+        }
+        #endregion
     }
 }

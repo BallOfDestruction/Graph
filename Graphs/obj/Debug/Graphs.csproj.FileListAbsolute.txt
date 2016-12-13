@@ -2,3 +2,13 @@ c:\users\admins\documents\visual studio 2015\Projects\Graphs\Graphs\bin\Debug\Gr
 c:\users\admins\documents\visual studio 2015\Projects\Graphs\Graphs\bin\Debug\Graphs.pdb
 c:\users\admins\documents\visual studio 2015\Projects\Graphs\Graphs\obj\Debug\Graphs.dll
 c:\users\admins\documents\visual studio 2015\Projects\Graphs\Graphs\obj\Debug\Graphs.pdb
+C:\Users\stud\Desktop\Graph-master\Graphs\obj\Debug\Graphs.csprojResolveAssemblyReference.cache
+C:\Users\stud\Desktop\Graph-master\Graphs\obj\Debug\Graphs.dll
+C:\Users\stud\Desktop\Graph-master\Graphs\obj\Debug\Graphs.pdb
+C:\Users\stud\Desktop\Graph-master\Graphs\bin\Debug\Graphs.dll
+C:\Users\stud\Desktop\Graph-master\Graphs\bin\Debug\Graphs.pdb
+C:\Users\adminS\Documents\Graph\Graphs\bin\Debug\Graphs.dll
+C:\Users\adminS\Documents\Graph\Graphs\bin\Debug\Graphs.pdb
+C:\Users\adminS\Documents\Graph\Graphs\obj\Debug\Graphs.csprojResolveAssemblyReference.cache
+C:\Users\adminS\Documents\Graph\Graphs\obj\Debug\Graphs.dll
+C:\Users\adminS\Documents\Graph\Graphs\obj\Debug\Graphs.pdb

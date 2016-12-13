@@ -10,7 +10,7 @@ namespace Graphs
     {
         public double Weight { get; set; }
 
-        public WeightEdge(WeightVertex NextVertex, double weight) : base(NextVertex)
+        public WeightEdge(WeightVertex previousVertex, WeightVertex nextVertex , double weight) : base(previousVertex, nextVertex)
         {
             this.Weight = weight;
         }

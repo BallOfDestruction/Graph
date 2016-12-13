@@ -1,1 +1,17 @@
 c:\Users\adminS\documents\visual studio 2015\Projects\Graphs\TestGraph\bin\Debug\TestGraph.exe.config
+C:\Users\adminS\Documents\Graph\TestGraph\bin\Debug\TestGraph.exe.config
+C:\Users\adminS\Documents\Graph\TestGraph\bin\Debug\TestGraph.exe
+C:\Users\adminS\Documents\Graph\TestGraph\bin\Debug\TestGraph.pdb
+C:\Users\adminS\Documents\Graph\TestGraph\bin\Debug\Graphs.dll
+C:\Users\adminS\Documents\Graph\TestGraph\bin\Debug\Graphs.pdb
+C:\Users\adminS\Documents\Graph\TestGraph\obj\Debug\TestGraph.csprojResolveAssemblyReference.cache
+C:\Users\adminS\Documents\Graph\TestGraph\obj\Debug\MainWindow.g.cs
+C:\Users\adminS\Documents\Graph\TestGraph\obj\Debug\App.g.cs
+C:\Users\adminS\Documents\Graph\TestGraph\obj\Debug\TestGraph_MarkupCompile.cache
+C:\Users\adminS\Documents\Graph\TestGraph\obj\Debug\TestGraph_MarkupCompile.lref
+C:\Users\adminS\Documents\Graph\TestGraph\obj\Debug\MainWindow.baml
+C:\Users\adminS\Documents\Graph\TestGraph\obj\Debug\TestGraph.g.resources
+C:\Users\adminS\Documents\Graph\TestGraph\obj\Debug\TestGraph.Properties.Resources.resources
+C:\Users\adminS\Documents\Graph\TestGraph\obj\Debug\TestGraph.csproj.GenerateResource.Cache
+C:\Users\adminS\Documents\Graph\TestGraph\obj\Debug\TestGraph.exe
+C:\Users\adminS\Documents\Graph\TestGraph\obj\Debug\TestGraph.pdb
