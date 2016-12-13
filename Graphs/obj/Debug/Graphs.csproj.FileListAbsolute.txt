@@ -1,0 +1,4 @@
+c:\users\admins\documents\visual studio 2015\Projects\Graphs\Graphs\bin\Debug\Graphs.dll
+c:\users\admins\documents\visual studio 2015\Projects\Graphs\Graphs\bin\Debug\Graphs.pdb
+c:\users\admins\documents\visual studio 2015\Projects\Graphs\Graphs\obj\Debug\Graphs.dll
+c:\users\admins\documents\visual studio 2015\Projects\Graphs\Graphs\obj\Debug\Graphs.pdb
