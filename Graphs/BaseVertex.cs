@@ -12,20 +12,17 @@ namespace Graphs
     /// <typeparam name="T">Тип ребра</typeparam>
     public class BaseVertex<T>
     {
-        public string Name { get; set; }
-
+        public string Name { get;protected set; }
         /// <summary>
         /// Метка, используется в поисках
         /// </summary>
         internal bool IsSeen { get; set; }
+
+        internal int Depth { get; set; } = 0;
         /// <summary>
         /// Степень вершины
         /// </summary>
-        public int Degree => NextVertex.Count();
-        /// <summary>
-        /// Следующие вершины
-        /// </summary>
-        public List<T> NextVertex { get; set; }
+        public List<T> NextVertex { get; protected set; }
 
         public BaseVertex(string name)
         {

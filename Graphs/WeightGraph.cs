@@ -33,35 +33,12 @@ namespace Graphs
 
         #region Edge
         /// <summary>
-        /// Добавление ребра из вершины в нее саму
-        /// </summary>
-        public void AddEdgeHimself(string name, double weight)
-        {
-            this.NameVertex[name].NextVertex.Add(new WeightEdge(NameVertex[name], NameVertex[name], weight));
-        }
-        /// <summary>
         /// Добавляет ребро между двумя существующими вершинами
         /// </summary>
         public void AddEdge(string previousVertex, string nextVertex, double weight)
         {
-            if ((!NameVertex.ContainsKey(previousVertex) && (!NameVertex.ContainsKey(nextVertex))))
-            {
-                throw new Exception("Данных вершин в графе нет: " + previousVertex + " " + nextVertex);
-            }
-            else
-            {
-                if (!NameVertex.ContainsKey(previousVertex))
-                {
-                    throw new Exception("Вершины нет в графе: " + previousVertex);
-                }
-                else
-                {
-                    if (!NameVertex.ContainsKey(nextVertex))
-                    {
-                        throw new Exception("Вершины нет в графе: " + nextVertex);
-                    }
-                }
-            }
+            IsExistVertex(nextVertex);
+            IsExistVertex(previousVertex);
             var previous = this.NameVertex[previousVertex];
             var next = this.NameVertex[nextVertex];
             this.AddEdge(new WeightEdge(previous, next, weight));
@@ -73,7 +50,9 @@ namespace Graphs
         {
             var ee = new WeightEdge((WeightVertex)e.NextVertex, (WeightVertex)e.Previous, e.Weight);
             base.AddEdge(e);
-            base.AddEdge(ee);
+            //На случай петли
+            if(e.NextVertex != e.Previous)
+                base.AddEdge(ee);
         }
         /// <summary>
         /// Добавляет ребро графа между двумя существующими вершинами
@@ -108,6 +87,7 @@ namespace Graphs
             this.RemoveEdge(previous, next);
             this.RemoveEdge(next, previous);
         }
+
         #endregion
     }
 }

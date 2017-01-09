@@ -11,3 +11,4 @@ C:\Users\adminS\Documents\Graph\Graphs\bin\Debug\Graphs.dll
 C:\Users\adminS\Documents\Graph\Graphs\bin\Debug\Graphs.pdb
 C:\Users\adminS\Documents\Graph\Graphs\obj\Debug\Graphs.dll
 C:\Users\adminS\Documents\Graph\Graphs\obj\Debug\Graphs.pdb
+C:\Users\adminS\Documents\Graph\Graphs\obj\Debug\Graphs.csprojResolveAssemblyReference.cache

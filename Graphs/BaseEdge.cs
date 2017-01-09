@@ -15,11 +15,11 @@ namespace Graphs
         /// <summary>
         /// Исходящая вершина
         /// </summary>
-        public BaseVertex<T> Previous { get; set; }
+        public BaseVertex<T> Previous { get; protected set; }
         /// <summary>
         /// Конечная вершина
         /// </summary>
-        public BaseVertex<T> NextVertex { get; set; }
+        public BaseVertex<T> NextVertex { get; protected set; }
 
         public BaseEdge(BaseVertex<T> previousVertex, BaseVertex<T> nextVertex)
         {

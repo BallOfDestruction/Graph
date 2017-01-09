@@ -33,35 +33,12 @@ namespace Graphs
 
         #region Edge
         /// <summary>
-        /// Добавление ребра из вершины в нее саму
-        /// </summary>
-        public void AddEdgeHimself(string name, double weight)
-        {
-            this.NameVertex[name].NextVertex.Add(new WeightEdge(NameVertex[name], NameVertex[name], weight));
-        }
-        /// <summary>
         /// Добавляет ребро между двумя существующими вершинами
         /// </summary>
         public void AddEdge(string previousVertex, string nextVertex, double weight)
         {
-            if ((!NameVertex.ContainsKey(previousVertex) && (!NameVertex.ContainsKey(nextVertex))))
-            {
-                throw new Exception("Данных вершин в графе нет: " + previousVertex + " " + nextVertex);
-            }
-            else
-            {
-                if (!NameVertex.ContainsKey(previousVertex))
-                {
-                    throw new Exception("Вершины нет в графе: " + previousVertex);
-                }
-                else
-                {
-                    if (!NameVertex.ContainsKey(nextVertex))
-                    {
-                        throw new Exception("Вершины нет в графе: " + nextVertex);
-                    }
-                }
-            }
+            IsExistVertex(nextVertex);
+            IsExistVertex(previousVertex);
             var previous = this.NameVertex[previousVertex];
             var next = this.NameVertex[nextVertex];
             this.AddEdge(new WeightEdge(previous, next, weight));
@@ -104,6 +81,7 @@ namespace Graphs
         {
             this.RemoveEdge(previous, next);
         }
+
         #endregion
     }
 }

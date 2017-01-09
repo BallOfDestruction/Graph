@@ -14,5 +14,9 @@ namespace Graphs
         {
             this.Weight = weight;
         }
+        public override string ToString()
+        {
+            return base.ToString() + "|" + Weight;
+        }
     }
 }

@@ -29,67 +29,16 @@ namespace Graphs
                 this.AddVertex(vertexName);
             }
         }
-        /// <summary>
-        /// Добавление новой вершины в граф по имени, а также исходящие ребра из нее
-        /// </summary>
-        /// <param name="nextVertex">Следующие вершины</param>
-        public void AddVertex(string name, params Vertex[] nextVertex)
-        {
-            if (this.NameVertex.ContainsKey(name))
-            {
-                throw new Exception("Данная вершина уже присутствует");
-            }
-            if (nextVertex.Where(w => nextVertex.Where(s => s == w).Count() > 1).Count() > 0)
-            {
-                throw new Exception("Вершины в списке повторяются, из одной вершины не может существовать два ребра в другую вершину");
-            }
-            this.AddVertex(name);
-            Vertex vertex = this.NameVertex[name];
-            foreach (Vertex ver in nextVertex)
-            {
-                if (ver.NextVertex.Select(w => w.NextVertex).Contains(vertex))
-                {
-                    throw new Exception("Ребро уже существует: " + ver.Name + " - " + vertex.Name);
-                }
-            }
-            foreach (Vertex ver in nextVertex)
-            {
-                vertex.NextVertex.Add(new Edge(vertex, ver));
-            }
-        }
         #endregion
 
         #region Edge
-        /// <summary>
-        /// Добавление ребра из вершины в нее саму
-        /// </summary>
-        public void AddEdgeHimself(string name)
-        {
-            this.NameVertex[name].NextVertex.Add(new Edge(NameVertex[name], NameVertex[name]));
-        }
         /// <summary>
         /// Добавляет ребро между двумя существующими вершинами
         /// </summary>
         public void AddEdge(string previousVertex, string nextVertex)
         {
-            if ((!NameVertex.ContainsKey(previousVertex) && (!NameVertex.ContainsKey(nextVertex))))
-            {
-                throw new Exception("Данных вершин в графе нет: " + previousVertex + " " + nextVertex);
-            }
-            else
-            {
-                if (!NameVertex.ContainsKey(previousVertex))
-                {
-                    throw new Exception("Вершины нет в графе: " + previousVertex);
-                }
-                else
-                {
-                    if (!NameVertex.ContainsKey(nextVertex))
-                    {
-                        throw new Exception("Вершины нет в графе: " + nextVertex);
-                    }
-                }
-            }
+            IsExistVertex(previousVertex);
+            IsExistVertex(nextVertex);
             var previous = this.NameVertex[previousVertex];
             var next = this.NameVertex[nextVertex];
             this.AddEdge(new Edge(previous, next));

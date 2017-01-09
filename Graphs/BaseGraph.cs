@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Graphs
 {
@@ -23,6 +24,9 @@ namespace Graphs
         /// Словарь вершин графа по их именам
         /// </summary>
         public Dictionary<string, T> NameVertex => Vertex.ToDictionary(wde => wde.Name);
+        public Dictionary<string, List<T>> InputVertex => Vertex.ToDictionary(w => w.Name, e => Edges.Where(ww => ww.NextVertex == e).Select(www => (T)www.Previous).ToList());
+        public Dictionary<string, int> DegreeInput => Vertex.ToDictionary(w => w.Name, e => Edges.Select(p => p.NextVertex).Where(pp => pp == e).Count());
+        public Dictionary<string, int> DegreeOutput => Vertex.ToDictionary(w => w.Name, e => e.NextVertex.Count);
         /// <summary>
         /// Вершины графа
         /// </summary>
@@ -34,10 +38,7 @@ namespace Graphs
         /// </summary>
         public void AddVertex(T vertex)
         {
-            if (this.Vertex.Contains(vertex))
-            {
-                throw new Exception("Вершина " + vertex.Name + " уже присутствует в графе");
-            }
+            IsNotExistVertex(vertex.Name);
             this.Vertex.Add(vertex);
         }
         /// <summary>
@@ -45,15 +46,8 @@ namespace Graphs
         /// </summary>
         public void AddVertex(IEnumerable<T> vertex)
         {
-            var buffer = vertex.Where(w => this.Vertex.Contains(w));
-            if (buffer.Count() != 0)
-            {
-                throw new Exception("Некоторые вершины уже есть в графе: " + buffer.Select(w => w.Name + " "));
-            }
             foreach (T vert in vertex)
-            {
                 AddVertex(vert);
-            }
         }
         public void AddVertex(params T[] vertex)
         {
@@ -64,28 +58,17 @@ namespace Graphs
         /// </summary>
         public void RemoveVertex(string name)
         {
-            if (NameVertex.ContainsKey(name))
+            IsExistVertex(name);
+            var vertex = NameVertex[name];
+            this.Vertex.Remove(vertex);
+            var neibour = this.Vertex.Where(w => (w.NextVertex.Select(ww => ww.NextVertex).Contains(vertex)));
+            foreach (var neib in neibour)
             {
-                var vertex = NameVertex[name];
-                this.Vertex.Remove(vertex);
-                var neibour = this.Vertex.Where(w => (w.NextVertex.Select(ww => ww.NextVertex).Contains(vertex)));
-                foreach (var neib in neibour)
-                {
-                    var edge = neib.NextVertex.Where(w => w.NextVertex == vertex);
-                    if (edge.Count() == 1)
-                    {
-                        neib.NextVertex.Remove(edge.ToArray()[0]);
-                    }
-                    else
-                    {
-                        throw new Exception(@"Вообще не парю в каком случае может так сломаться, но проверить надо,
-                            а то точно не будет понятно где крякнулась");
-                    }
-                }
-            }
-            else
-            {
-                throw new Exception("Нет такой вершины");
+                var edge = neib.NextVertex.Where(w => w.NextVertex == vertex);
+                if (edge.Count() == 1)
+                    neib.NextVertex.Remove(edge.ToArray()[0]);
+                else
+                    throw new Exception("Error2");
             }
         }
         /// <summary>
@@ -104,35 +87,14 @@ namespace Graphs
         protected void AddEdge(E edge)
         {
             var c = (this.Edges.Where(w => (edge.Previous == w.Previous) && (w.NextVertex == edge.NextVertex))).ToArray();
-            c.Count();
             if (this.Edges.Contains(edge) || c.Count() > 0)
-            {
                 throw new Exception("Ребро уже присутствует в графе " + edge.Previous.Name + " -> " + edge.NextVertex.Name);
-            }
             if (Vertex.Contains(edge.Previous) && Vertex.Contains(edge.NextVertex))
-            {
                 NameVertex[edge.Previous.Name].NextVertex.Add(edge);
-            }
             else
             {
-                if ((!Vertex.Contains(edge.Previous) && !Vertex.Contains(edge.NextVertex)))
-                {
-                    throw new Exception("Вершины: " + edge.Previous.Name + ", " + edge.NextVertex.Name + " не существуют в графе");
-                }
-                else
-                {
-                    if (!Vertex.Contains(edge.Previous))
-                    {
-                        throw new Exception("Вершина " + edge.Previous.Name + " не существует в графе");
-                    }
-                    else
-                    {
-                        if (!Vertex.Contains(edge.NextVertex))
-                        {
-                            throw new Exception("Вершина " + edge.NextVertex.Name + " не существует в графе");
-                        }
-                    }
-                }
+                IsExistVertex(edge.NextVertex.Name);
+                IsExistVertex(edge.Previous.Name);
             }
         }
         /// <summary>
@@ -142,20 +104,12 @@ namespace Graphs
         {
             var edges = this.Edges.Where(w => w.NextVertex.Name.Equals(nextVertex) && w.Previous.Name.Equals(previous)).ToArray();
             if (edges.Count() == 0)
-            {
                 throw new Exception("Такого ребра не существует");
-            }
             else
-            {
                 if (edges.Count() > 1)
-                {
-                    throw new Exception("Я снова не парю такой случай, вроде все предусмотрел, надеюсь, вы этого не видите");
-                }
+                    throw new Exception("Error1");
                 else
-                {
                     this.RemoveEdge(edges[0]);
-                }
-            }
         }
         /// <summary>
         /// Удаление существующего ребра
@@ -163,13 +117,106 @@ namespace Graphs
         protected void RemoveEdge(E edge)
         {
             if (!Edges.Contains(edge))
-            {
                 throw new Exception("Такого ребра не существует");
-            }
             else
-            {
                 edge.Previous.NextVertex.Remove(edge);
+        }
+        #endregion
+
+        #region Checked
+        public virtual bool IsIzomorph(BaseGraph<T, E> graph)
+        {
+            BaseGraph<T, E> gr = graph;
+            if (gr.IsFullCount() && this.IsFullCount())
+                return true;
+            if (gr.Vertex.Count == this.Vertex.Count)
+            {
+                List<int> thisInput = this.DegreeInput.Values.ToList();
+                List<int> thisOutput = this.DegreeOutput.Values.ToList();
+                List<int> grInput = gr.DegreeInput.Values.ToList();
+                List<int> grOutput = gr.DegreeOutput.Values.ToList();
+                foreach (int i in thisInput)
+                {
+                    if (grInput.Contains(i))
+                        grInput.Remove(i);
+                }
+                if (grInput.Count != 0)
+                    return false;
+                foreach (int i in thisOutput)
+                {
+                    if (grOutput.Contains(i))
+                        grOutput.Remove(i);
+                }
+                if (grOutput.Count != 0)
+                    return false;
             }
+            return false;
+        }
+        /// <summary>
+        /// Проверка на существование вершины(если не существует - плохо)
+        ///Внутренняя проверка
+        ///Использовать в том случае, если нужно быть точно увереным
+        ///что данная вершина существует
+        /// </summary>
+        protected void IsExistVertex(string name)
+        {
+            if (!NameVertex.ContainsKey(name))
+                throw new Exception("Вершины " + name + "в графе нет");
+        }
+        /// <summary>
+        /// Проверка на существование вершины(если не существует - хорошо)
+        ///Внутренняя проверка
+        ///Использовать в том случае, если нужно быть точно увереным
+        ///что данная отсутствует существует
+        /// </summary>
+        protected void IsNotExistVertex(string name)
+        {
+            if (NameVertex.ContainsKey(name))
+                throw new Exception("Вершина " + name + "есть в графе");
+        }
+        /// <summary>
+        /// Проверка на свзяность графа
+        /// </summary>
+        public bool IsConherenceOfGraph()
+        {
+            List<T> goodVertex = new List<T>();
+            if (Vertex.Count == 0)
+                return true;
+            int position = 0;
+            goodVertex.Add(Vertex[0]);
+            while (position < goodVertex.Count)
+            {
+                foreach (T v in goodVertex[position].NextVertex.Select(w => w.NextVertex))
+                {
+                    if (!goodVertex.Contains(v))
+                    {
+                        goodVertex.Add(v);
+                    }
+                }
+                var vv = Vertex.Where( w  => w.NextVertex.Select(ww => ww.NextVertex).Where( www => www == goodVertex[position]).Count() != 0);
+                foreach (T v in vv)
+                {
+                    if (!goodVertex.Contains(v))
+                    {
+                        goodVertex.Add(v);
+                    }
+                }
+                position++;
+            }
+            if (goodVertex.Count < Vertex.Count)
+                return false;
+            else
+                return true;
+        }
+        /// <summary>
+        /// Проверка на полноту
+        /// </summary>
+        public bool IsFullCount()
+        {
+            if (Edges.Count == ((Vertex.Count * (Vertex.Count - 1)) / 2))
+                return true;
+            else
+                return false;
         }
         #endregion
 
@@ -181,13 +228,9 @@ namespace Graphs
         public bool DFS(string startVertex, string endVertex)
         {
             if (this.GetPathDFS(startVertex, endVertex) != null)
-            {
                 return true;
-            }
             else
-            {
                 return false;
-            }
         }
         /// <summary>
         /// Поиск в глубину
@@ -196,62 +239,52 @@ namespace Graphs
         public List<T> GetPathDFS(string startVertexName, string endVertexName)
         {
             NullebleNow();
-            if (!NameVertex.ContainsKey(startVertexName))
-            {
-                throw new Exception("Вершины " + startVertexName + "в графе нет");
-            }
-            if (!NameVertex.ContainsKey(endVertexName))
-            {
-                throw new Exception("Вершины " + endVertexName + "в графе нет");
-            }
+            IsExistVertex(startVertexName);
+            IsExistVertex(endVertexName);
             T startVertex = this.NameVertex[startVertexName];
             T endVertex = this.NameVertex[endVertexName];
             Stack<T> stack = new Stack<T>();
             stack.Push(startVertex);
-            bool end = false;
+            startVertex.Depth = 1;
             while (stack.Count != 0)
             {
                 T bufferVertex = stack.Pop();
                 if (bufferVertex.IsSeen == false)
                 {
                     bufferVertex.IsSeen = true;
-                    if (bufferVertex != endVertex)
+                    if (!bufferVertex.NextVertex.Select(w => w.NextVertex).Contains(endVertex))
                     {
                         foreach (T buf in bufferVertex.NextVertex.Select(w => w.NextVertex))
                         {
                             if ((!buf.IsSeen) && !stack.Contains(buf))
                             {
                                 stack.Push(buf);
+                                if ((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
+                                    buf.Depth = bufferVertex.Depth + 1;
                             }
                         }
                     }
                     else
                     {
-                        end = true;
-                        break;
+                        int depth = bufferVertex.Depth;
+                        Stack<T> answer = new Stack<T>();
+                        T buffer = endVertex;
+                        answer.Push(endVertex);
+                        while (buffer != startVertex)
+                        {
+                            var r = Vertex.Where(w => (w.NextVertex.Select(ww => ww.NextVertex).Contains(buffer)) && w.Depth == depth).ToArray();
+                            answer.Push(r[0]);
+                            depth--;
+                            buffer.IsSeen = false;
+                            buffer = r[0];
+                        }
+                        NullebleNow();
+                        return answer.ToList();
                     }
                 }
             }
-            if (end)
-            {
-                Stack<T> answer = new Stack<T>();
-                T buffer = endVertex;
-                answer.Push(endVertex);
-                while (buffer != startVertex)
-                {
-                    var r = Vertex.Where(w => w.NextVertex.Where(ww => (ww.NextVertex == buffer) && (ww.Previous.IsSeen)).Count() == 1).ToArray();
-                    answer.Push(r[0]);
-                    buffer.IsSeen = false;
-                    buffer = r[0];
-                }
-                NullebleNow();
-                return answer.ToList();
-            }
-            else
-            {
-                NullebleNow();
-                return null;
-            }
+            NullebleNow();
+            return null;
         }
         /// <summary>
         /// Поиск в ширину
@@ -260,13 +293,73 @@ namespace Graphs
         public bool BFS(string startVertex, string endVertex)
         {
             if (this.GetPathBFS(startVertex, endVertex) != null)
-            {
                 return true;
-            }
             else
-            {
                 return false;
+        }
+        /// <summary>
+        /// Обход в глубину
+        /// </summary>
+        public List<T> GetBFS(string startVertexName)
+        {
+            List<T> answer = new List<T>();
+            NullebleNow();
+            IsExistVertex(startVertexName);
+            T startVertex = this.NameVertex[startVertexName];
+            Queue<T> queue = new Queue<T>();
+            queue.Enqueue(startVertex);
+            startVertex.Depth = 1;
+            while (queue.Count != 0)
+            {
+                T bufferVertex = queue.Dequeue();
+                answer.Add(bufferVertex);
+                if (bufferVertex.IsSeen == false)
+                {
+                    bufferVertex.IsSeen = true;
+                    foreach (T buf in bufferVertex.NextVertex.Select(w => w.NextVertex))
+                    {
+                        if ((!buf.IsSeen) && !queue.Contains(buf))
+                        {
+                            queue.Enqueue(buf);
+                            if ((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
+                                buf.Depth = bufferVertex.Depth + 1;
+                        }
+                    }
+                }
             }
+            return answer;
+        }
+        /// <summary>
+        /// Обход в ширину
+        /// </summary>
+        public List<T> GetDFS(string startVertexName)
+        {
+            List<T> answer = new List<T>();
+            NullebleNow();
+            IsExistVertex(startVertexName);
+            T startVertex = this.NameVertex[startVertexName];
+            Stack<T> queue = new Stack<T>();
+            queue.Push(startVertex);
+            startVertex.Depth = 1;
+            while (queue.Count != 0)
+            {
+                T bufferVertex = queue.Pop();
+                answer.Add(bufferVertex);
+                if (bufferVertex.IsSeen == false)
+                {
+                    bufferVertex.IsSeen = true;
+                    foreach (T buf in bufferVertex.NextVertex.Select(w => w.NextVertex))
+                    {
+                        if ((!buf.IsSeen) && !queue.Contains(buf))
+                        {
+                            queue.Push(buf);
+                            if ((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
+                                buf.Depth = bufferVertex.Depth + 1;
+                        }
+                    }
+                }
+            }
+            return answer;
         }
         /// <summary>
         /// Поиск в ширину
@@ -275,62 +368,53 @@ namespace Graphs
         public List<T> GetPathBFS(string startVertexName, string endVertexName)
         {
             NullebleNow();
-            if (!NameVertex.ContainsKey(startVertexName))
-            {
-                throw new Exception("Вершины " + startVertexName + "в графе нет");
-            }
-            if (!NameVertex.ContainsKey(endVertexName))
-            {
-                throw new Exception("Вершины " + endVertexName + "в графе нет");
-            }
+            IsExistVertex(startVertexName);
+            IsExistVertex(endVertexName);
             T startVertex = this.NameVertex[startVertexName];
             T endVertex = this.NameVertex[endVertexName];
             Queue<T> queue = new Queue<T>();
             queue.Enqueue(startVertex);
-            bool end = false;
+            startVertex.Depth = 1;
             while (queue.Count != 0)
             {
                 T bufferVertex = queue.Dequeue();
                 if (bufferVertex.IsSeen == false)
                 {
                     bufferVertex.IsSeen = true;
-                    if (bufferVertex != endVertex)
+                    if (!bufferVertex.NextVertex.Select(w => w.NextVertex).Contains(endVertex))
                     {
                         foreach (T buf in bufferVertex.NextVertex.Select(w => w.NextVertex))
                         {
                             if ((!buf.IsSeen) && !queue.Contains(buf))
                             {
                                 queue.Enqueue(buf);
+                                if((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
+                                    buf.Depth = bufferVertex.Depth + 1;
                             }
                         }
                     }
                     else
                     {
-                        end = true;
-                        break;
+                        int depth = bufferVertex.Depth;
+                        Stack<T> answer = new Stack<T>();
+                        T buffer = endVertex;
+                        answer.Push(endVertex);
+                        while (buffer != startVertex)
+                        {
+                           
+                            var r = Vertex.Where(w => (w.NextVertex.Select(ww => ww.NextVertex).Contains(buffer)) && w.Depth == depth).ToArray();
+                            answer.Push(r[0]);
+                            depth--;
+                            buffer.IsSeen = false;
+                            buffer = r[0];
+                        }
+                        NullebleNow();
+                        return answer.ToList();
                     }
                 }
             }
-            if (end)
-            {
-                Stack<T> answer = new Stack<T>();
-                T buffer = endVertex;
-                answer.Push(endVertex);
-                while (buffer != startVertex)
-                {
-                    var r = Vertex.Where(w => w.NextVertex.Where(ww => (ww.NextVertex == buffer) && (ww.Previous.IsSeen)).Count() == 1).ToArray();
-                    answer.Push(r[0]);
-                    buffer.IsSeen = false;
-                    buffer = r[0];
-                }
-                NullebleNow();
-                return answer.ToList();
-            }
-            else
-            {
-                NullebleNow();
-                return null;
-            }
+            NullebleNow();
+            return null;
         }
         /// <summary>
         /// Обнуляет все вершины
@@ -340,8 +424,31 @@ namespace Graphs
             foreach (T edge in Vertex)
             {
                 edge.IsSeen = false;
+                edge.Depth = 0;
             }
         }
         #endregion
+        /// <summary>
+        /// Представляет граф в виде списка смежности
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            StringBuilder str = new StringBuilder();
+            foreach (T vertex in Vertex)
+            {
+                str.Append(vertex.Name + ": ");
+                if (vertex.NextVertex.Count != 0)
+                {
+                    foreach (E edge in vertex.NextVertex)
+                    {
+                        str.Append(edge.ToString() + ", ");
+                    }
+                    str.Remove(str.Length - 2, 1);
+                }
+                str.Append("\r\n");
+            }
+            return str.ToString();
+        }
     }
 }
