@@ -79,7 +79,7 @@ namespace Graphs
         /// </summary>
         public new void RemoveEdge(string previous, string next)
         {
-            this.RemoveEdge(previous, next);
+            base.RemoveEdge(previous, next);
         }
 
         #endregion

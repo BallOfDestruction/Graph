@@ -72,14 +72,14 @@ namespace Graphs
         /// </summary>
         public new void RemoveEdge(Edge edge)
         {
-            this.RemoveEdge(edge);
+            base.RemoveEdge(edge);
         }
         /// <summary>
         /// Удалеяет ребро между двумя вершинами
         /// </summary>
         public new void RemoveEdge(string previous, string next)
         {
-            this.RemoveEdge(previous, next);
+            base.RemoveEdge(previous, next);
         }
         #endregion
     }

@@ -18,7 +18,7 @@ namespace Graphs
         /// </summary>
         internal bool IsSeen { get; set; }
 
-        internal int Depth { get; set; } = 0;
+        public int Depth { get; set; } = 0;
         /// <summary>
         /// Степень вершины
         /// </summary>

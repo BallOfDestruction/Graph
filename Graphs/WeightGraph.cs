@@ -84,8 +84,8 @@ namespace Graphs
         /// </summary>
         public new void RemoveEdge(string previous, string next)
         {
-            this.RemoveEdge(previous, next);
-            this.RemoveEdge(next, previous);
+            base.RemoveEdge(previous, next);
+            base.RemoveEdge(next, previous);
         }
 
         #endregion

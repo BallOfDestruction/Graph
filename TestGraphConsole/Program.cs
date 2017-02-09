@@ -11,7 +11,7 @@ namespace TestGraphConsole
     {
         static void Main(string[] args)
         {
-            OrgGraph gr = new OrgGraph();
+            Graph gr = new Graph();
             gr.AddVertex("0", "1", "2", "3","4", "5","6", "7");
             gr.AddEdge("0","1");
             gr.AddEdge("0", "2");
@@ -23,9 +23,10 @@ namespace TestGraphConsole
             gr.AddEdge("3", "6");
             gr.AddEdge("4", "6");
             gr.AddEdge("4", "5");
-            gr.AddEdge("6", "7");
             gr.AddEdge("7", "5");
             gr.AddEdge("7", "6");
+            
+            gr.RemoveEdge("0", "1"); 
             Console.WriteLine(gr.ToString());
             Console.WriteLine("+++++++++++++++++++++++++");
             Console.WriteLine(gr.DegreeOutput["0"]);
@@ -38,11 +39,21 @@ namespace TestGraphConsole
             Console.WriteLine(gr.DegreeOutput["7"]);
 
             GraphIO.ToFile("1.txt", gr);
-            var r = GraphIO.FromFile<OrgGraph>("1.txt");
+            var r = GraphIO.FromFile<Graph>("1.txt");
             Console.WriteLine("+++++++++++++++++++++++++");
             Console.WriteLine(gr.ToString());
 
+
+            var b = gr.Vertex[0];
+            var t = b.NextVertex.Select(w => (Vertex)w.NextVertex).ToList();
+
+
             var c = gr.GetBFS("1");
+            int cen = c.Select(w => w.Depth).Max();
+            var p = gr.Vertex.ToDictionary(q => q.Name, w => gr.GetBFS(w.Name).Select(ww => ww.Depth).Max() - 1);
+            int k = 3;
+            p.Where(w => w.Value == k).Select(w => w.Key);
+            var pp = new string( p.Where(w => w.Value == k).Select(ww => ww.Key).SelectMany(www => www + "  ").ToArray());
             string str = "";
             foreach (Vertex ver in c)
                 str += ver.Name + " ";

@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphs", "Graphs\Graphs.csproj", "{AB4CC82A-A089-4C44-8B35-19FD03B4662E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGraph", "TestGraph\TestGraph.csproj", "{88DCA923-959B-4E7A-A580-AF0A183D1F55}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGraphConsole", "TestGraphConsole\TestGraphConsole.csproj", "{C25A05CF-18E2-4B17-ABDD-860288127FCE}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{AB4CC82A-A089-4C44-8B35-19FD03B4662E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB4CC82A-A089-4C44-8B35-19FD03B4662E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB4CC82A-A089-4C44-8B35-19FD03B4662E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88DCA923-959B-4E7A-A580-AF0A183D1F55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88DCA923-959B-4E7A-A580-AF0A183D1F55}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88DCA923-959B-4E7A-A580-AF0A183D1F55}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88DCA923-959B-4E7A-A580-AF0A183D1F55}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C25A05CF-18E2-4B17-ABDD-860288127FCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C25A05CF-18E2-4B17-ABDD-860288127FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C25A05CF-18E2-4B17-ABDD-860288127FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
