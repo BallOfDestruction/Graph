@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Graphs;
 
 namespace TestGraphConsole
@@ -11,7 +8,7 @@ namespace TestGraphConsole
     {
         static void Main(string[] args)
         {
-            Graph gr = new Graph();
+            var gr = new Graph();
             gr.AddVertex("0", "1", "2", "3","4", "5","6", "7");
             gr.AddEdge("0","1");
             gr.AddEdge("0", "2");
@@ -43,26 +40,14 @@ namespace TestGraphConsole
             Console.WriteLine("+++++++++++++++++++++++++");
             Console.WriteLine(gr.ToString());
 
-
-            var b = gr.Vertex[0];
-            var t = b.NextVertex.Select(w => (Vertex)w.NextVertex).ToList();
-
-
             var c = gr.GetBFS("1");
-            int cen = c.Select(w => w.Depth).Max();
             var p = gr.Vertex.ToDictionary(q => q.Name, w => gr.GetBFS(w.Name).Select(ww => ww.Depth).Max() - 1);
-            int k = 3;
-            p.Where(w => w.Value == k).Select(w => w.Key);
-            var pp = new string( p.Where(w => w.Value == k).Select(ww => ww.Key).SelectMany(www => www + "  ").ToArray());
-            string str = "";
-            foreach (Vertex ver in c)
-                str += ver.Name + " ";
+            p.Where(w => w.Value == 3).Select(w => w.Key);
+            var str = c.Aggregate("", (current, ver) => current + (ver.Name + " "));
             Console.WriteLine(str);
 
             c = gr.GetDFS("1");
-            str = "";
-            foreach (Vertex ver in c)
-                str += ver.Name + " ";
+            str = c.Aggregate("", (current, ver) => current + (ver.Name + " "));
             Console.WriteLine(str);
             var f = r.IsConherenceOfGraph();
             Console.WriteLine(f);

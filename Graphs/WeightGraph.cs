@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Graphs
 {
+    /// <inheritdoc />
     /// <summary>
     /// Класс неориентированного взвешенного графа
     /// </summary>
@@ -17,16 +15,16 @@ namespace Graphs
         /// </summary>
         public void AddVertex(string name)
         {
-            this.AddVertex(new WeightVertex(name));
+            AddVertex(new WeightVertex(name));
         }
         /// <summary>
         /// Добавление новой вершин в граф по имени
         /// </summary>
         public void AddVertex(params string[] names)
         {
-            foreach (string vertexName in names)
+            foreach (var vertexName in names)
             {
-                this.AddVertex(vertexName);
+                AddVertex(vertexName);
             }
         }
         #endregion
@@ -39,9 +37,9 @@ namespace Graphs
         {
             IsExistVertex(nextVertex);
             IsExistVertex(previousVertex);
-            var previous = this.NameVertex[previousVertex];
-            var next = this.NameVertex[nextVertex];
-            this.AddEdge(new WeightEdge(previous, next, weight));
+            var previous = NameVertex[previousVertex];
+            var next = NameVertex[nextVertex];
+            AddEdge(new WeightEdge(previous, next, weight));
         }
         /// <summary>
         /// Добавляет ребро графа между двумя существующими вершинами
@@ -59,7 +57,7 @@ namespace Graphs
         /// </summary>
         public void AddEdge(params WeightVertex[] edge)
         {
-            foreach (WeightVertex ed in edge)
+            foreach (var ed in edge)
             {
                 AddEdge(ed);
             }
@@ -76,8 +74,8 @@ namespace Graphs
         /// </summary>
         public new void RemoveEdge(WeightEdge edge)
         {
-            this.RemoveEdge(edge);
-            this.RemoveEdge(Edges.Where(w => (w.Previous == edge.NextVertex) && (w.NextVertex == edge.Previous)).ToArray()[0]);
+            RemoveEdge(edge);
+            RemoveEdge(Edges.Where(w => (w.Previous == edge.NextVertex) && (w.NextVertex == edge.Previous)).ToArray()[0]);
         }
         /// <summary>
         /// Удалеяет ребро между двумя вершинами(обоюдно)

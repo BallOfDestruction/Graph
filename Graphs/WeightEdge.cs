@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Graphs
+﻿namespace Graphs
 {
     public class WeightEdge : BaseEdge<WeightEdge>
     {
@@ -12,7 +6,7 @@ namespace Graphs
 
         public WeightEdge(WeightVertex previousVertex, WeightVertex nextVertex , double weight) : base(previousVertex, nextVertex)
         {
-            this.Weight = weight;
+            Weight = weight;
         }
         public override string ToString()
         {

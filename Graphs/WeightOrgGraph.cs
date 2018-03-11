@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Graphs
 {
+    /// <inheritdoc />
     /// <summary>
     /// Класс ориентированного взвешенного графа
     /// </summary>
@@ -17,16 +15,16 @@ namespace Graphs
         /// </summary>
         public void AddVertex(string name)
         {
-            this.AddVertex(new WeightVertex(name));
+            AddVertex(new WeightVertex(name));
         }
         /// <summary>
         /// Добавление новой вершин в граф по имени
         /// </summary>
         public void AddVertex(params string[] names)
         {
-            foreach (string vertexName in names)
+            foreach (var vertexName in names)
             {
-                this.AddVertex(vertexName);
+                AddVertex(vertexName);
             }
         }
         #endregion
@@ -39,9 +37,9 @@ namespace Graphs
         {
             IsExistVertex(nextVertex);
             IsExistVertex(previousVertex);
-            var previous = this.NameVertex[previousVertex];
-            var next = this.NameVertex[nextVertex];
-            this.AddEdge(new WeightEdge(previous, next, weight));
+            var previous = NameVertex[previousVertex];
+            var next = NameVertex[nextVertex];
+            AddEdge(new WeightEdge(previous, next, weight));
         }
         /// <summary>
         /// Добавляет ребро графа между двумя существующими вершинами
@@ -55,7 +53,7 @@ namespace Graphs
         /// </summary>
         public void AddEdge(params WeightEdge[] edge)
         {
-            foreach (WeightEdge ed in edge)
+            foreach (var ed in edge)
             {
                 AddEdge(ed);
             }
@@ -65,14 +63,14 @@ namespace Graphs
         /// </summary>
         public void AddEdge(IEnumerable<WeightEdge> edges)
         {
-            this.AddEdge(edges.ToArray());
+            AddEdge(edges.ToArray());
         }
         /// <summary>
         /// Удалеяет ребро между двумя вершинами
         /// </summary>
         public new void RemoveEdge(WeightEdge edge)
         {
-            this.RemoveEdge(edge);
+            RemoveEdge(edge);
         }
         /// <summary>
         /// Удалеяет ребро между двумя вершинами

@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Graphs</RootNamespace>
     <AssemblyName>Graphs</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,7 +47,6 @@
     <Compile Include="Graph.cs" />
     <Compile Include="GraphIO.cs" />
     <Compile Include="GraphTransformation.cs" />
-    <Compile Include="InfoGraph.cs" />
     <Compile Include="OrgGraph.cs" />
     <Compile Include="WeightEdge.cs" />
     <Compile Include="WeightGraph.cs" />

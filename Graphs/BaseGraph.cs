@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 
 namespace Graphs
 {
@@ -11,21 +9,21 @@ namespace Graphs
     /// Базовый класс для графа
     /// </summary>
     /// <typeparam name="T">Тип вершины</typeparam>
-    /// <typeparam name="E">Тип ребра</typeparam>
-    public abstract class BaseGraph<T, E>
-        where T : BaseVertex<E>
-        where E : BaseEdge<E>
+    /// <typeparam name="TE">Тип ребра</typeparam>
+    public abstract class BaseGraph<T, TE>
+        where T : BaseVertex<TE>
+        where TE : BaseEdge<TE>
     {
         /// <summary>
         /// Список ребер графа
         /// </summary>
-        public List<E> Edges => Vertex.SelectMany(w => w.NextVertex).ToList();
+        public List<TE> Edges => Vertex.SelectMany(w => w.NextVertex).ToList();
         /// <summary>
         /// Словарь вершин графа по их именам
         /// </summary>
         public Dictionary<string, T> NameVertex => Vertex.ToDictionary(wde => wde.Name);
         public Dictionary<string, List<T>> InputVertex => Vertex.ToDictionary(w => w.Name, e => Edges.Where(ww => ww.NextVertex == e).Select(www => (T)www.Previous).ToList());
-        public Dictionary<string, int> DegreeInput => Vertex.ToDictionary(w => w.Name, e => Edges.Select(p => p.NextVertex).Where(pp => pp == e).Count());
+        public Dictionary<string, int> DegreeInput => Vertex.ToDictionary(w => w.Name, e => Edges.Select(p => p.NextVertex).Count(pp => pp == e));
         public Dictionary<string, int> DegreeOutput => Vertex.ToDictionary(w => w.Name, e => e.NextVertex.Count);
         /// <summary>
         /// Вершины графа
@@ -39,14 +37,14 @@ namespace Graphs
         public void AddVertex(T vertex)
         {
             IsNotExistVertex(vertex.Name);
-            this.Vertex.Add(vertex);
+            Vertex.Add(vertex);
         }
         /// <summary>
         /// Добавление любого перечисляемого множества вершин в граф
         /// </summary>
         public void AddVertex(IEnumerable<T> vertex)
         {
-            foreach (T vert in vertex)
+            foreach (var vert in vertex)
                 AddVertex(vert);
         }
         public void AddVertex(params T[] vertex)
@@ -60,12 +58,12 @@ namespace Graphs
         {
             IsExistVertex(name);
             var vertex = NameVertex[name];
-            this.Vertex.Remove(vertex);
-            var neibour = this.Vertex.Where(w => (w.NextVertex.Select(ww => ww.NextVertex).Contains(vertex)));
+            Vertex.Remove(vertex);
+            var neibour = Vertex.Where(w => (w.NextVertex.Select(ww => ww.NextVertex).Contains(vertex)));
             foreach (var neib in neibour)
             {
-                var edge = neib.NextVertex.Where(w => w.NextVertex == vertex);
-                if (edge.Count() == 1)
+                var edge = neib.NextVertex.Where(w => w.NextVertex == vertex).ToList();
+                if (edge.Count == 1)
                     neib.NextVertex.Remove(edge.ToArray()[0]);
                 else
                     throw new Exception("Error2");
@@ -76,7 +74,7 @@ namespace Graphs
         /// </summary>
         public void RemoveVertex(T vertex)
         {
-            this.RemoveVertex(vertex.Name);
+            RemoveVertex(vertex.Name);
         }
         #endregion
 
@@ -84,10 +82,10 @@ namespace Graphs
         /// <summary>
         /// Добавление вершины в одну сторону
         /// </summary>
-        protected void AddEdge(E edge)
+        protected void AddEdge(TE edge)
         {
-            var c = (this.Edges.Where(w => (edge.Previous == w.Previous) && (w.NextVertex == edge.NextVertex))).ToArray();
-            if (this.Edges.Contains(edge) || c.Count() > 0)
+            var c = (Edges.Where(w => (edge.Previous == w.Previous) && (w.NextVertex == edge.NextVertex))).ToArray();
+            if (Edges.Contains(edge) || c.Any())
                 throw new Exception("Ребро уже присутствует в графе " + edge.Previous.Name + " -> " + edge.NextVertex.Name);
             if (Vertex.Contains(edge.Previous) && Vertex.Contains(edge.NextVertex))
                 NameVertex[edge.Previous.Name].NextVertex.Add(edge);
@@ -102,47 +100,45 @@ namespace Graphs
         /// </summary>
         protected void RemoveEdge(string previous, string nextVertex)
         {
-            var edges = this.Edges.Where(w => w.NextVertex.Name.Equals(nextVertex) && w.Previous.Name.Equals(previous)).ToArray();
-            if (edges.Count() == 0)
+            var edges = Edges.Where(w => w.NextVertex.Name.Equals(nextVertex) && w.Previous.Name.Equals(previous)).ToArray();
+            if (!edges.Any())
                 throw new Exception("Такого ребра не существует");
-            else
-                if (edges.Count() > 1)
-                    throw new Exception("Error1");
-                else
-                    this.RemoveEdge(edges[0]);
+
+            if (edges.Length > 1)
+                throw new Exception("Error1");
+            RemoveEdge(edges[0]);
         }
         /// <summary>
         /// Удаление существующего ребра
         /// </summary>
-        protected void RemoveEdge(E edge)
+        protected void RemoveEdge(TE edge)
         {
             if (!Edges.Contains(edge))
                 throw new Exception("Такого ребра не существует");
-            else
-                edge.Previous.NextVertex.Remove(edge);
+            edge.Previous.NextVertex.Remove(edge);
         }
         #endregion
 
         #region Checked
-        public virtual bool IsIzomorph(BaseGraph<T, E> graph)
+        public virtual bool IsIzomorph(BaseGraph<T, TE> graph)
         {
-            BaseGraph<T, E> gr = graph;
-            if (gr.IsFullCount() && this.IsFullCount())
+            var gr = graph;
+            if (gr.IsFullCount() && IsFullCount())
                 return true;
-            if (gr.Vertex.Count == this.Vertex.Count)
+            if (gr.Vertex.Count == Vertex.Count)
             {
-                List<int> thisInput = this.DegreeInput.Values.ToList();
-                List<int> thisOutput = this.DegreeOutput.Values.ToList();
-                List<int> grInput = gr.DegreeInput.Values.ToList();
-                List<int> grOutput = gr.DegreeOutput.Values.ToList();
-                foreach (int i in thisInput)
+                var thisInput = DegreeInput.Values.ToList();
+                var thisOutput = DegreeOutput.Values.ToList();
+                var grInput = gr.DegreeInput.Values.ToList();
+                var grOutput = gr.DegreeOutput.Values.ToList();
+                foreach (var i in thisInput)
                 {
                     if (grInput.Contains(i))
                         grInput.Remove(i);
                 }
                 if (grInput.Count != 0)
                     return false;
-                foreach (int i in thisOutput)
+                foreach (var i in thisOutput)
                 {
                     if (grOutput.Contains(i))
                         grOutput.Remove(i);
@@ -179,22 +175,24 @@ namespace Graphs
         /// </summary>
         public bool IsConherenceOfGraph()
         {
-            List<T> goodVertex = new List<T>();
+            var goodVertex = new List<T>();
             if (Vertex.Count == 0)
                 return true;
-            int position = 0;
+            var position = 0;
             goodVertex.Add(Vertex[0]);
             while (position < goodVertex.Count)
             {
-                foreach (T v in goodVertex[position].NextVertex.Select(w => w.NextVertex))
+                foreach (var baseVertex in goodVertex[position].NextVertex.Select(w => w.NextVertex))
                 {
+                    var v = (T) baseVertex;
                     if (!goodVertex.Contains(v))
                     {
                         goodVertex.Add(v);
                     }
                 }
-                var vv = Vertex.Where( w  => w.NextVertex.Select(ww => ww.NextVertex).Where( www => www == goodVertex[position]).Count() != 0);
-                foreach (T v in vv)
+                var position1 = position;
+                var vv = Vertex.Where( w  => w.NextVertex.Select( ww => ww.NextVertex).Count(www => www == goodVertex[position1]) != 0);
+                foreach (var v in vv)
                 {
                     if (!goodVertex.Contains(v))
                     {
@@ -203,20 +201,14 @@ namespace Graphs
                 }
                 position++;
             }
-            if (goodVertex.Count < Vertex.Count)
-                return false;
-            else
-                return true;
+            return goodVertex.Count >= Vertex.Count;
         }
         /// <summary>
         /// Проверка на полноту
         /// </summary>
         public bool IsFullCount()
         {
-            if (Edges.Count == ((Vertex.Count * (Vertex.Count - 1)) / 2))
-                return true;
-            else
-                return false;
+            return Edges.Count == ((Vertex.Count * (Vertex.Count - 1)) / 2);
         }
         #endregion
 
@@ -227,10 +219,7 @@ namespace Graphs
         /// <returns>Есть ли путь от начальной к кконечной вершине</returns>
         public bool DFS(string startVertex, string endVertex)
         {
-            if (this.GetPathDFS(startVertex, endVertex) != null)
-                return true;
-            else
-                return false;
+            return GetPathDFS(startVertex, endVertex) != null;
         }
         /// <summary>
         /// Поиск в глубину
@@ -241,34 +230,33 @@ namespace Graphs
             NullebleNow();
             IsExistVertex(startVertexName);
             IsExistVertex(endVertexName);
-            T startVertex = this.NameVertex[startVertexName];
-            T endVertex = this.NameVertex[endVertexName];
-            Stack<T> stack = new Stack<T>();
+            var startVertex = NameVertex[startVertexName];
+            var endVertex = NameVertex[endVertexName];
+            var stack = new Stack<T>();
             stack.Push(startVertex);
             startVertex.Depth = 1;
             while (stack.Count != 0)
             {
-                T bufferVertex = stack.Pop();
+                var bufferVertex = stack.Pop();
                 if (bufferVertex.IsSeen == false)
                 {
                     bufferVertex.IsSeen = true;
                     if (!bufferVertex.NextVertex.Select(w => w.NextVertex).Contains(endVertex))
                     {
-                        foreach (T buf in bufferVertex.NextVertex.Select(w => w.NextVertex))
+                        foreach (var baseVertex in bufferVertex.NextVertex.Select(w => w.NextVertex))
                         {
-                            if ((!buf.IsSeen) && !stack.Contains(buf))
-                            {
-                                stack.Push(buf);
-                                if ((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
-                                    buf.Depth = bufferVertex.Depth + 1;
-                            }
+                            var buf = (T) baseVertex;
+                            if ((buf.IsSeen) || stack.Contains(buf)) continue;
+                            stack.Push(buf);
+                            if ((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
+                                buf.Depth = bufferVertex.Depth + 1;
                         }
                     }
                     else
                     {
-                        int depth = bufferVertex.Depth;
-                        Stack<T> answer = new Stack<T>();
-                        T buffer = endVertex;
+                        var depth = bufferVertex.Depth;
+                        var answer = new Stack<T>();
+                        var buffer = endVertex;
                         answer.Push(endVertex);
                         while (buffer != startVertex)
                         {
@@ -292,38 +280,35 @@ namespace Graphs
         /// <returns>Есть ли путь от начальной к кконечной вершине</returns>
         public bool BFS(string startVertex, string endVertex)
         {
-            if (this.GetPathBFS(startVertex, endVertex) != null)
-                return true;
-            else
-                return false;
+            return GetPathBFS(startVertex, endVertex) != null;
         }
         /// <summary>
         /// Обход в глубину
         /// </summary>
         public List<T> GetBFS(string startVertexName)
         {
-            List<T> answer = new List<T>();
+            var answer = new List<T>();
             NullebleNow();
             IsExistVertex(startVertexName);
-            T startVertex = this.NameVertex[startVertexName];
-            Queue<T> queue = new Queue<T>();
+            var startVertex = NameVertex[startVertexName];
+            var queue = new Queue<T>();
             queue.Enqueue(startVertex);
             startVertex.Depth = 1;
             while (queue.Count != 0)
             {
-                T bufferVertex = queue.Dequeue();
+                var bufferVertex = queue.Dequeue();
                 answer.Add(bufferVertex);
                 if (bufferVertex.IsSeen == false)
                 {
                     bufferVertex.IsSeen = true;
-                    foreach (T buf in bufferVertex.NextVertex.Select(w => w.NextVertex))
+                    foreach (var baseVertex in bufferVertex.NextVertex.Select(w => w.NextVertex))
                     {
-                        if ((!buf.IsSeen) && !queue.Contains(buf))
-                        {
-                            queue.Enqueue(buf);
-                            if ((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
-                                buf.Depth = bufferVertex.Depth + 1;
-                        }
+                        var buf = (T) baseVertex;
+                        if ((buf.IsSeen) || queue.Contains(buf)) continue;
+
+                        queue.Enqueue(buf);
+                        if ((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
+                            buf.Depth = bufferVertex.Depth + 1;
                     }
                 }
             }
@@ -334,28 +319,28 @@ namespace Graphs
         /// </summary>
         public List<T> GetDFS(string startVertexName)
         {
-            List<T> answer = new List<T>();
+            var answer = new List<T>();
             NullebleNow();
             IsExistVertex(startVertexName);
-            T startVertex = this.NameVertex[startVertexName];
-            Stack<T> queue = new Stack<T>();
+            var startVertex = NameVertex[startVertexName];
+            var queue = new Stack<T>();
             queue.Push(startVertex);
             startVertex.Depth = 1;
             while (queue.Count != 0)
             {
-                T bufferVertex = queue.Pop();
+                var bufferVertex = queue.Pop();
                 answer.Add(bufferVertex);
                 if (bufferVertex.IsSeen == false)
                 {
                     bufferVertex.IsSeen = true;
-                    foreach (T buf in bufferVertex.NextVertex.Select(w => w.NextVertex))
+                    foreach (var baseVertex in bufferVertex.NextVertex.Select(w => w.NextVertex))
                     {
-                        if ((!buf.IsSeen) && !queue.Contains(buf))
-                        {
-                            queue.Push(buf);
-                            if ((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
-                                buf.Depth = bufferVertex.Depth + 1;
-                        }
+                        var buf = (T) baseVertex;
+                        if ((buf.IsSeen) || queue.Contains(buf)) continue;
+
+                        queue.Push(buf);
+                        if ((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
+                            buf.Depth = bufferVertex.Depth + 1;
                     }
                 }
             }
@@ -370,34 +355,34 @@ namespace Graphs
             NullebleNow();
             IsExistVertex(startVertexName);
             IsExistVertex(endVertexName);
-            T startVertex = this.NameVertex[startVertexName];
-            T endVertex = this.NameVertex[endVertexName];
-            Queue<T> queue = new Queue<T>();
+            var startVertex = NameVertex[startVertexName];
+            var endVertex = NameVertex[endVertexName];
+            var queue = new Queue<T>();
             queue.Enqueue(startVertex);
             startVertex.Depth = 1;
             while (queue.Count != 0)
             {
-                T bufferVertex = queue.Dequeue();
+                var bufferVertex = queue.Dequeue();
                 if (bufferVertex.IsSeen == false)
                 {
                     bufferVertex.IsSeen = true;
                     if (!bufferVertex.NextVertex.Select(w => w.NextVertex).Contains(endVertex))
                     {
-                        foreach (T buf in bufferVertex.NextVertex.Select(w => w.NextVertex))
+                        foreach (var baseVertex in bufferVertex.NextVertex.Select(w => w.NextVertex))
                         {
-                            if ((!buf.IsSeen) && !queue.Contains(buf))
-                            {
-                                queue.Enqueue(buf);
-                                if((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
-                                    buf.Depth = bufferVertex.Depth + 1;
-                            }
+                            var buf = (T) baseVertex;
+                            if ((buf.IsSeen) || queue.Contains(buf)) continue;
+
+                            queue.Enqueue(buf);
+                            if((buf.Depth == 0) || (buf.Depth > bufferVertex.Depth + 1))
+                                buf.Depth = bufferVertex.Depth + 1;
                         }
                     }
                     else
                     {
-                        int depth = bufferVertex.Depth;
-                        Stack<T> answer = new Stack<T>();
-                        T buffer = endVertex;
+                        var depth = bufferVertex.Depth;
+                        var answer = new Stack<T>();
+                        var buffer = endVertex;
                         answer.Push(endVertex);
                         while (buffer != startVertex)
                         {
@@ -421,7 +406,7 @@ namespace Graphs
         /// </summary>
         protected void NullebleNow()
         {
-            foreach (T edge in Vertex)
+            foreach (var edge in Vertex)
             {
                 edge.IsSeen = false;
                 edge.Depth = 0;
@@ -434,15 +419,15 @@ namespace Graphs
         /// <returns></returns>
         public override string ToString()
         {
-            StringBuilder str = new StringBuilder();
-            foreach (T vertex in Vertex)
+            var str = new StringBuilder();
+            foreach (var vertex in Vertex)
             {
                 str.Append(vertex.Name + ": ");
                 if (vertex.NextVertex.Count != 0)
                 {
-                    foreach (E edge in vertex.NextVertex)
+                    foreach (var edge in vertex.NextVertex)
                     {
-                        str.Append(edge.ToString() + ", ");
+                        str.Append($"{edge}, ");
                     }
                     str.Remove(str.Length - 2, 1);
                 }
